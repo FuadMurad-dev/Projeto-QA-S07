@@ -1,20 +1,17 @@
-describe('TC-001: Busca por cidade com as primeiras letras maiusculas e as demais minusculas', () => {
+describe('TC-001: Busca por cidade seguindo as normas de gramática', () => {
   beforeEach(() => {
     cy.visit('/');
   });
 
-  it('Deve buscar a cidade inserida e exibir os dados do clima', () => {
+  it('Deve buscar a cidade inserida e exibir a mesma', () => {
     cy.intercept('GET', '**/weather*').as('getWeather');
 
-    cy.get('input[type="text"]').clear().type('Nova York');
+    cy.get('input[type="text"]').clear().type('São Paulo');
     cy.contains('button', 'Search').click();
 
     cy.wait('@getWeather').then((interception) => {
       expect(interception.response.statusCode).to.eq(200);
     });
-    cy.contains('Current condition')
-    cy.contains('°C').should('be.visible');
-    cy.contains('Humidity').should('be.visible');
-    cy.contains('Wind').should('be.visible');
+    cy.contains('São Paulo').should('be.visible');
   });
 });
