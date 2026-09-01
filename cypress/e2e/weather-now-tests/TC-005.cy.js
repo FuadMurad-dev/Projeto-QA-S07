@@ -1,20 +1,21 @@
-describe('TC-005: Comparação de busca em Português e Inglês', () => {
+describe('TC-005: Search comparison in Portuguese and English', () => {
   beforeEach(() => {
     cy.visit('/');
   });
 
-  it('Deve garantir que as buscas por "Nova York" e "New York" retornam a mesma cidade', () => {
+  it('Should ensure that searches for "Nova York" and "New York" return the same city', () => {
     cy.intercept('GET', '**/weather*').as('getWeather');
 
-    let primeironome;
+    let firstName;
+    let secondName;
 
     cy.get('input[type="text"]').clear().type('Nova York');
     cy.contains('button', 'Search').click();
 
     cy.wait('@getWeather').then((interception) => {
       expect(interception.response.statusCode).to.eq(200);
-      primeironome = interception.response.body.city;
-      cy.log(`Primeiro nome capturado: ${primeironome}`);
+      firstName = interception.response.body.city;
+      cy.log(`First captured name: ${firstName}`);
     });
 
     cy.get('input[type="text"]').clear().type('New York');
@@ -22,10 +23,10 @@ describe('TC-005: Comparação de busca em Português e Inglês', () => {
 
     cy.wait('@getWeather').then((interception) => {
       expect(interception.response.statusCode).to.eq(200);
-      const segundoNome = interception.response.body.city;
-      cy.log(`Segundo nome capturado: ${segundoNome}`);
+      secondName = interception.response.body.city;
+      cy.log(`Second captured name: ${secondName}`);
 
-      expect(primeironome).to.eq(segundoNome);
+      expect(firstName).to.eq(secondName);
     });
 
     cy.contains('New York').should('be.visible');
