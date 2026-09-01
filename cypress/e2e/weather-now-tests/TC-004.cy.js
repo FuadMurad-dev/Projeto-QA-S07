@@ -1,9 +1,9 @@
-describe('TC-004: Busca pela mesma cidade de TC-001 porém agora sem acentos', () => {
+describe('TC-004: Search for the same city as TC-001 but without accents', () => {
   beforeEach(() => {
     cy.visit('/');
   });
 
-  it('Deve buscar a cidade inserida e exibir a mesma exatamente igual a TC-001', () => {
+  it('Should search for the entered city and display it exactly the same as TC-001', () => {
     cy.intercept('GET', '**/weather*').as('getWeather');
 
     cy.get('input[type="text"]').clear().type('sao paulo');
@@ -12,6 +12,7 @@ describe('TC-004: Busca pela mesma cidade de TC-001 porém agora sem acentos', (
     cy.wait('@getWeather').then((interception) => {
       expect(interception.response.statusCode).to.eq(200);
     });
+
     cy.contains('São Paulo').should('be.visible');
   });
 });

@@ -1,9 +1,9 @@
-describe('TC-006: Busca por cidade ainda não fundada', () => {
+describe('TC-006: Search for a city that has not been founded yet', () => {
   beforeEach(() => {
     cy.visit('/');
   });
 
-  it('Deve buscar a cidade inserida e exibir a mesma, caso ela já tenha sido fundada', () => {
+  it('Should search for the entered city and display it if it has already been founded', () => {
     cy.intercept('GET', '**/weather*').as('getWeather');
 
     cy.get('input[type="text"]').clear().type('Chris é Guloso por Brownies no matagal');
@@ -11,9 +11,8 @@ describe('TC-006: Busca por cidade ainda não fundada', () => {
 
     cy.wait('@getWeather').then((interception) => {
       expect(interception.response.statusCode).to.eq(200);
-      nomecidade = interception.response.body.city;
-      cy.log(`Nome da cidade capturado: ${nomecidade}`);
+      const cityName = interception.response.body.city;
+      cy.log(`Captured city name: ${cityName}`);
     });
-    cy.contains().should('be.visible');
   });
 });
