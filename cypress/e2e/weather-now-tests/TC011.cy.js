@@ -10,8 +10,12 @@ describe("TC-011: Verify that the page loads correctly" , () => {
         cy.get("h1").should("contain", "Weather Now")
         cy.get("input").should("be.visible")
         cy.get("button").should("be.visible")
+        cy.get("p").should("contain", "Discover the weather in any city in the world")
     })
 })
+
+
+
 
 
 
