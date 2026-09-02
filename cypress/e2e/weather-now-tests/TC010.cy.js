@@ -1,12 +1,12 @@
-describe('TC-006: Search for a city that has not been founded yet', () => {
+describe('TC-010: Search with only numbers', () => {
   beforeEach(() => {
     cy.visit('/');
   });
 
-  it('Should display an error message when the city is entered', () => {
+  it('Should display an error message that no city was found', () => {
     cy.intercept('GET', '**/weather*').as('getWeather');
 
-    cy.get('input[type="text"]').clear().type('Chris é Guloso por Brownies no matagal');
+    cy.get('input[type="text"]').clear().type('1234567890');
     cy.contains('button', 'Search').click();
 
     cy.wait('@getWeather').then((interception) => {
