@@ -1,6 +1,4 @@
-
-
-describe("TC-011: Verify that the page loads correctly" , () => {
+describe("TC-014: Verify that the page loads correctly" , () => {
     beforeEach(() => {
 
         cy.visit("http://localhost:3000/")
