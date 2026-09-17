@@ -26,7 +26,7 @@ Os dados são fornecidos pela API do [OpenWeather](https://openweathermap.org/).
 Projeto-QA-S07/
 ├── cypress/
 │   ├── e2e/
-│   │   └── weather-now-tests/       # Testes automatizados da aplicação Weather Now (TC-001 a TC-014)
+│   │   └── weather-now-tests/       # Testes automatizados da aplicação Weather Now (TC-001 a TC-020)
 │   ├── cypress-examples-tests/      # Exemplos de referência do Cypress (não são executados)
 │   ├── fixtures/                    # Dados mockados usados nos testes
 │   ├── reports/                     # Relatório HTML gerado a cada execução (não versionado)
@@ -91,7 +91,7 @@ Esses arquivos, assim como a pasta `cypress/reports/`, não são versionados (es
 
 ## ✅ Casos de teste
 
-Última execução: **14/14 testes passando (100%)**.
+Total: **20 casos de teste**.
 
 | ID | Descrição | Status |
 |----|-----------|--------|
@@ -109,3 +109,9 @@ Esses arquivos, assim como a pasta `cypress/reports/`, não são versionados (es
 | TC-012 | Busca por 2 cidades ao mesmo tempo | ✅ |
 | TC-013 | Busca pela cidade certa, mas país errado | ✅ |
 | TC-014 | Busca com string extremamente longa (análise de valor limite, 300 caracteres) | ✅ |
+| TC-015 | Simula erro 500 da API — exibe mensagem de erro amigável ao usuário | ✅ |
+| TC-016 | Simula atraso extremo da API — verifica estado de loading e botão desabilitado | ✅ |
+| TC-017 | Busca por cidade e país juntos (ex: São Paulo, BR) | ✅ |
+| TC-018 | Compara cidades de mesmo nome em países diferentes (La Paz, BO x La Paz, MX) | ✅ |
+| TC-019 | Busca acionada pela tecla Enter, sem clicar no botão | ✅ |
+| TC-020 | Simula limite de requisições da API excedido (HTTP 429) | ✅ |
