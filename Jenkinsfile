@@ -6,7 +6,7 @@ pipeline {
             steps {
                 sh '''
                 rm -rf app-src
-                git clone https://github.com/<usuario>/<repo-do-app>.git app-src
+                git clone https://github.com/CaioBonvicine/Weather-Now.git app-src
                 '''
     }
 }
