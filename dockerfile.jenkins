@@ -15,4 +15,4 @@ RUN apt-get update && apt-get install -y ca-certificates curl gnupg \
 USER jenkins
 
 RUN jenkins-plugin-cli --plugins \
-    workflow-aggregator git docker-workflow htmlpublisher
+    workflow-aggregator git docker-workflow htmlpublisher blueocean
