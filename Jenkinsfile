@@ -1,36 +1,55 @@
-pipeline{
-    agent any 
-    stages{
-        stage('Build image dockerfile'){
-            steps{
-                echo 'Building image dockerfile'
+pipeline {
+    agent any
+
+    stages {
+        stage('Build image Cypress') {
+            steps {
+                echo '>>> [1/4] Iniciando: build da imagem do Cypress'
                 sh 'docker build -f Dockerfile.cypress -t weather-cypress .'
             }
         }
-    }
-        stage('Run image dockerfile'){
-            steps{
-                '''
-                echo 'Running image dockerfile'
-                docker network create qa-net || true
-                docker run -d --name weather-app --network qa-net <imagem-ou-build-da-app>
-                '''
+
+        stage('Build image App') {
+            steps {
+                echo '>>> [2/4] Iniciando: build da imagem da aplicação'
+                sh 'docker build -f Dockerfile.app -t weather-app .'
+            }
         }
-    }
-        stage('run tests'){
-            steps{
+
+        stage('Run app') {
+            steps {
+                echo '>>> [3/4] Iniciando: subida da aplicação'
                 sh '''
-                echo 'Running tests'
-                docker run --name cypress-run --network qa-net \
-                -e CYPRESS_baseUrl=http://weather-app:3000 \
-                weather-cypress
+                    docker rm -f weather-app cypress-run || true
+                    docker network create qa-net || true
+                    docker run -d --name weather-app --network qa-net weather-app
+                    sleep 20
                 '''
+            }
+        }
+
+        stage('Run tests') {
+            steps {
+                echo '>>> [4/4] Iniciando: execução dos testes Cypress'
+                sh '''
+                    docker run --name cypress-run --network qa-net \
+                        -e CYPRESS_baseUrl=http://weather-app:3000 \
+                        weather-cypress
+                '''
+            }
         }
     }
+
     post {
         always {
+            echo '>>> Finalizando: coletando relatório e limpando containers'
             sh 'docker cp cypress-run:/e2e/cypress/reports ./reports || true'
-            publishHTML(target: [reportDir: 'reports', reportFiles: 'index.html', reportName: 'Cypress Report'])
+            publishHTML(target: [
+                reportDir: 'reports',
+                reportFiles: 'index.html',
+                reportName: 'Cypress Report',
+                allowMissing: true
+            ])
             sh 'docker rm -f cypress-run weather-app || true'
         }
     }
