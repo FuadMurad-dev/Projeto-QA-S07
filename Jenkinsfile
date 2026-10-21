@@ -1,5 +1,5 @@
 pipeline{
-    agente any 
+    agent any 
     stages{
         stage('Build image dockerfile'){
             steps{
@@ -8,23 +8,23 @@ pipeline{
             }
         }
     }
-    stage('Run image dockerfile'){
-        steps{
-            '''
-            echo 'Running image dockerfile'
-          docker network create qa-net || true
-          docker run -d --name weather-app --network qa-net <imagem-ou-build-da-app>
-        '''
+        stage('Run image dockerfile'){
+            steps{
+                '''
+                echo 'Running image dockerfile'
+                docker network create qa-net || true
+                docker run -d --name weather-app --network qa-net <imagem-ou-build-da-app>
+                '''
         }
     }
-    stage('run tests'){
-        steps{
-            sh '''
-            echo 'Running tests'
-            docker run --name cypress-run --network qa-net \
-            -e CYPRESS_baseUrl=http://weather-app:3000 \
-            weather-cypress
-        '''
+        stage('run tests'){
+            steps{
+                sh '''
+                echo 'Running tests'
+                docker run --name cypress-run --network qa-net \
+                -e CYPRESS_baseUrl=http://weather-app:3000 \
+                weather-cypress
+                '''
         }
     }
     post {
