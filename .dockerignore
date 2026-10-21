@@ -1,0 +1,9 @@
+node_modules
+.git
+.env
+cypress/videos
+cypress/screenshots
+cypress/downloads
+cypress/reports
+app-src
+reports

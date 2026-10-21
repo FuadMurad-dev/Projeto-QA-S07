@@ -4,12 +4,7 @@ WORKDIR /e2e
 
 COPY package.json package-lock.json ./
 
-RUN npm ci 
+RUN npm ci
 
 COPY cypress.config.js ./
 COPY cypress ./cypress
-
-
-
-
-

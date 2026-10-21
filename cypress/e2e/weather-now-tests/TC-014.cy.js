@@ -1,7 +1,7 @@
 describe("TC-014: Verify that the page loads correctly" , () => {
     beforeEach(() => {
 
-        cy.visit("http://localhost:3000/")
+        cy.visit("/")
     })
 
     it("Should display the correct title", () => {
