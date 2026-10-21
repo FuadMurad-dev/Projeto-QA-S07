@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        APP_REPO = 'https://github.com/<usuario>/<repo-do-app>.git'
+        APP_REPO = "https://github.com/CaioBonvicine/Weather-Now.git"
     }
 
     stages {
