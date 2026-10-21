@@ -5,14 +5,14 @@ pipeline {
         stage('Build image Cypress') {
             steps {
                 echo '>>> [1/4] Iniciando: build da imagem do Cypress'
-                sh 'docker build -f Dockerfile.cypress -t weather-cypress .'
+                sh 'docker build -f dockerfile.cypress -t weather-cypress .'
             }
         }
 
         stage('Build image App') {
             steps {
                 echo '>>> [2/4] Iniciando: build da imagem da aplicação'
-                sh 'docker build -f Dockerfile.app -t weather-app .'
+                sh 'docker build -f dockerfile.app -t weather-app .'
             }
         }
 
