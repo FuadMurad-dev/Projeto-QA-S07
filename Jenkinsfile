@@ -1,44 +1,62 @@
 pipeline {
     agent any
 
+    options {
+        timeout(time: 20, unit: 'MINUTES')
+    }
+
+    environment {
+        APP_REPO = 'https://github.com/<usuario>/<repo-do-app>.git'
+    }
+
     stages {
         stage('Clone app') {
             steps {
+                echo '>>> [1/5] Clonando o repositório da aplicação'
                 sh '''
-                rm -rf app-src
-                git clone https://github.com/CaioBonvicine/Weather-Now.git app-src
+                    rm -rf app-src
+                    git clone --depth 1 $APP_REPO app-src
+                    ls app-src
                 '''
-    }
-}
+            }
+        }
+
         stage('Build image Cypress') {
             steps {
-                echo '>>> [1/4] Iniciando: build da imagem do Cypress'
+                echo '>>> [2/5] Build da imagem do Cypress'
                 sh 'docker build -f dockerfile.cypress -t weather-cypress .'
             }
         }
 
         stage('Build image App') {
             steps {
-                echo '>>> [2/4] Iniciando: build da imagem da aplicação'
-                sh 'docker build -f dockerfile.app -t weather-app .'
+                echo '>>> [3/5] Build da imagem da aplicação'
+                sh 'docker build -f dockerfile.app -t weather-app ./app-src'
             }
         }
 
         stage('Run app') {
             steps {
-                echo '>>> [3/4] Iniciando: subida da aplicação'
+                echo '>>> [4/5] Subindo a aplicação'
                 sh '''
                     docker rm -f weather-app cypress-run || true
                     docker network create qa-net || true
                     docker run -d --name weather-app --network qa-net weather-app
-                    sleep 20
+
+                    for i in $(seq 1 30); do
+                        if docker run --rm --network qa-net curlimages/curl -sf http://weather-app:3000 > /dev/null; then
+                            echo "App respondendo"; exit 0
+                        fi
+                        sleep 2
+                    done
+                    echo "App não subiu a tempo"; docker logs weather-app; exit 1
                 '''
             }
         }
 
         stage('Run tests') {
             steps {
-                echo '>>> [4/4] Iniciando: execução dos testes Cypress'
+                echo '>>> [5/5] Executando testes Cypress'
                 sh '''
                     docker run --name cypress-run --network qa-net \
                         -e CYPRESS_baseUrl=http://weather-app:3000 \
