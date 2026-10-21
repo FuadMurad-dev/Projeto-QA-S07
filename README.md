@@ -17,7 +17,9 @@ Os dados são fornecidos pela API do [OpenWeather](https://openweathermap.org/).
 ## 🛠️ Tecnologias
 
 - [Cypress](https://www.cypress.io/) — framework de testes end-to-end (E2E)
-- [cypress-mochawesome-reporter](https://www.npmjs.com/package/cypress-mochawesome-reporter) — geração de relatórios HTML visuais
+- [Allure Report](https://allurereport.org/) (`allure-cypress`) — relatórios de testes com histórico e tendências
+- [Jenkins](https://www.jenkins.io/) — pipeline de CI/CD
+- [Docker](https://www.docker.com/) / Docker Compose — containers do ambiente
 - Node.js / npm
 
 ## 📁 Estrutura do projeto
@@ -29,9 +31,14 @@ Projeto-QA-S07/
 │   │   └── weather-now-tests/       # Testes automatizados da aplicação Weather Now (TC-001 a TC-020)
 │   ├── cypress-examples-tests/      # Exemplos de referência do Cypress (não são executados)
 │   ├── fixtures/                    # Dados mockados usados nos testes
-│   ├── reports/                     # Relatório HTML gerado a cada execução (não versionado)
 │   └── support/                     # Comandos customizados e configurações globais
+├── allure-results/                  # Resultados brutos do Allure gerados a cada execução (não versionado)
 ├── cypress.config.js                # Configuração do Cypress (baseUrl, timeouts, viewport, reporter etc.)
+├── docker-compose.yml               # Containers: app, cypress, jenkins, allure e portainer
+├── dockerfile.app                   # Imagem da aplicação Weather Now
+├── dockerfile.cypress               # Imagem com os testes Cypress
+├── dockerfile.jenkins               # Imagem do Jenkins com Docker CLI e plugins
+├── Jenkinsfile                      # Pipeline de CI/CD
 ├── .gitignore
 ├── package.json
 ├── package-lock.json
@@ -72,14 +79,30 @@ npx cypress run
 
 ## 📊 Relatório de testes
 
-O projeto usa o `cypress-mochawesome-reporter` para gerar um relatório HTML navegável após cada execução.
+O projeto usa o [Allure Report](https://allurereport.org/) (`allure-cypress`). Cada execução grava os resultados em `allure-results/`, e o container `allure` gera o relatório mantendo o histórico das últimas execuções (tendências, testes instáveis e screenshots de falhas).
 
-Após rodar `npm run open-report`, abra o arquivo:
+Com os containers rodando, o relatório fica em:
 ```
-cypress/reports/index.html
+http://localhost:5050/allure-docker-service/projects/default/reports/latest/index.html
 ```
 
-O relatório mostra o status de cada caso de teste, tempo de execução, código executado e, em caso de falha, screenshot e vídeo anexados automaticamente.
+## 🐳 Containers
+
+| Container | Porta | Função |
+|-----------|-------|--------|
+| `app` | 3000 | Aplicação Weather Now |
+| `cypress` | — | Executa os testes E2E (perfil `test`) |
+| `jenkins` | 8080 | Pipeline de CI/CD (visualização em *Pipeline Graph View*) |
+| `allure` | 5050 | Relatórios de testes com histórico |
+| `portainer` | 9443 | Interface web para gerenciar os containers (`https://localhost:9443`) |
+
+```bash
+docker compose up -d                      # sobe app, jenkins, allure e portainer
+docker compose --profile test run cypress # executa os testes
+curl "http://localhost:5050/allure-docker-service/generate-report?project_id=default"
+```
+
+No Jenkins, cadastre a credencial **Secret text** `openweather-api-key` com a chave da API do OpenWeather.
 
 ## 🎥 Vídeos e screenshots
 
@@ -87,7 +110,7 @@ O Cypress gera automaticamente:
 - Vídeos de todas as execuções em `cypress/videos/`
 - Screenshots de testes que falharam em `cypress/screenshots/`
 
-Esses arquivos, assim como a pasta `cypress/reports/`, não são versionados (estão no `.gitignore`), pois são artefatos gerados a cada execução.
+Esses arquivos, assim como a pasta `allure-results/`, não são versionados (estão no `.gitignore`), pois são artefatos gerados a cada execução.
 
 ## ✅ Casos de teste
 

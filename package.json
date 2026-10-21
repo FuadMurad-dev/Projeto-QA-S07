@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/FuadMurad-dev/Projeto-QA-S07#readme",
   "devDependencies": {
-    "cypress": "^15.21.1",
-    "cypress-mochawesome-reporter": "^5.0.0"
+    "allure-cypress": "^3.14.0",
+    "cypress": "^15.21.1"
   }
 }

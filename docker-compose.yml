@@ -28,7 +28,7 @@ services:
       - CYPRESS_baseUrl=http://app:3000
       - CYPRESS_API_KEY=${OPENWEATHER_API_KEY}
     volumes:
-      - ./cypress/reports:/e2e/cypress/reports
+      - allure-results:/e2e/allure-results
       - ./cypress/screenshots:/e2e/cypress/screenshots
       - ./cypress/videos:/e2e/cypress/videos
 
@@ -42,13 +42,32 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-    
-  reports:
-    image: nginx:alpine
+
+  # Allure: recebe os resultados do Cypress e gera o relatório com histórico
+  allure:
+    image: frankescobar/allure-docker-service:2.27.0
+    environment:
+      - CHECK_RESULTS_EVERY_SECONDS=NONE   # relatório gerado sob demanda (Jenkins chama a API)
+      - KEEP_HISTORY=1
+      - KEEP_HISTORY_LATEST=20
     ports:
-      - "8081:80"
+      - "5050:5050"
     volumes:
-      - ./cypress/reports:/usr/share/nginx/html:ro
+      - allure-results:/app/allure-results
+      - allure-reports:/app/default-reports
+
+  # Portainer: interface web para gerenciar os containers
+  portainer:
+    image: portainer/portainer-ce:2.21.5
+    ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
 
 volumes:
   jenkins_home:
+  portainer_data:
+  allure-reports:
+  allure-results:
+    name: allure-results   # nome fixo para o Jenkins usar no "docker run -v"

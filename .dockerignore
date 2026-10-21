@@ -7,3 +7,5 @@ cypress/downloads
 cypress/reports
 app-src
 reports
+allure-results
+allure-report

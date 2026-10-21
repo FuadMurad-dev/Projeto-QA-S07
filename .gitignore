@@ -41,3 +41,7 @@ yarn-error.log*
 
 
 
+
+# Allure
+/allure-results
+/allure-report

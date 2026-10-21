@@ -9,6 +9,10 @@ pipeline {
         APP_REPO = "https://github.com/CaioBonvicine/Weather-Now.git"
         // credential do tipo "Secret text" cadastrada no Jenkins
         OPENWEATHER_API_KEY = credentials('openweather-api-key')
+        // volume compartilhado com o container do Allure (docker-compose.yml)
+        ALLURE_RESULTS_VOLUME = "allure-results"
+        // o Jenkins acessa o Allure pela rede do docker compose
+        ALLURE_URL = "http://allure:5050"
     }
 
     stages {
@@ -68,7 +72,11 @@ pipeline {
             steps {
                 echo '>>> [5/5] Executando testes Cypress'
                 sh '''
+                    # limpa os resultados da execução anterior (o histórico fica no Allure)
+                    docker run --rm -v $ALLURE_RESULTS_VOLUME:/results alpine sh -c 'rm -rf /results/*'
+
                     docker run --name cypress-run --network qa-net \
+                        -v $ALLURE_RESULTS_VOLUME:/e2e/allure-results \
                         -e CYPRESS_baseUrl=http://weather-app:3000 \
                         -e CYPRESS_API_KEY=$OPENWEATHER_API_KEY \
                         weather-cypress
@@ -79,17 +87,12 @@ pipeline {
 
     post {
         always {
-            echo '>>> Finalizando: coletando relatório e limpando containers'
+            echo '>>> Finalizando: gerando relatório Allure e limpando containers'
             sh '''
-                rm -rf reports
-                docker cp cypress-run:/e2e/cypress/reports ./reports || true
+                curl -sf "$ALLURE_URL/allure-docker-service/generate-report?project_id=default" > /dev/null \
+                    && echo "Relatório Allure: http://localhost:5050/allure-docker-service/projects/default/reports/latest/index.html" \
+                    || echo "Não foi possível gerar o relatório Allure (container 'allure' está rodando?)"
             '''
-            publishHTML(target: [
-                reportDir: 'reports',
-                reportFiles: 'index.html',
-                reportName: 'Cypress Report',
-                allowMissing: true
-            ])
             sh 'docker rm -f cypress-run weather-app || true'
         }
     }
