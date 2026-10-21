@@ -2,6 +2,14 @@ pipeline {
     agent any
 
     stages {
+        stage('Clone app') {
+            steps {
+                sh '''
+                rm -rf app-src
+                git clone https://github.com/<usuario>/<repo-do-app>.git app-src
+                '''
+    }
+}
         stage('Build image Cypress') {
             steps {
                 echo '>>> [1/4] Iniciando: build da imagem do Cypress'
