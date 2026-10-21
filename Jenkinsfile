@@ -18,6 +18,14 @@ pipeline {
                     git clone --depth 1 $APP_REPO app-src
                     ls app-src
                 '''
+                sh '''
+                    rm -rf app-src
+                    git clone --depth 1 $APP_REPO app-src
+                    echo "--- arquivos ---"
+                    ls -la app-src
+                    echo "--- scripts do package.json ---"
+                    grep -A8 '"scripts"' app-src/package.json
+                '''
             }
         }
 
@@ -32,6 +40,7 @@ pipeline {
             steps {
                 echo '>>> [3/5] Build da imagem da aplicação'
                 sh 'docker build -f dockerfile.app -t weather-app ./app-src'
+                sh 'npm run build --prefix ./app-src'   
             }
         }
 
